@@ -1,0 +1,36 @@
+node{
+    
+def mavenHome = tool name: "maven3.8.5"
+
+echo "Build number: ${env.BUILD_NUMBER}"
+//echo "Job name is: ${env.JOB_NAME}"
+echo "Node name is:${env.NODE_NAME}"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([pollSCM('* * * * *')])])
+
+
+
+stage('checkoutcode'){
+git branch: 'development', credentialsId: 'f16ccfd0-da21-4d83-994e-1f7d5c01cf39', url: 'https://github.com/mss-banking-sectors/maven-web-application.git'
+}
+
+stage('build'){
+sh "${mavenHome}/bin/mvn clean package"
+}
+  /*
+stage('ExecutesonarQubeReport'){
+sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+
+stage('uploadArtifactintoNexus')
+{
+sh "${mavenHome}/bin/mvn deploy"
+}
+
+stage('DeployAppIntoTomcatServer'){
+sshagent(['fd2a2022-4c66-43b1-9726-f9a2f2f492b6']) {
+  sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.22.246:/opt/apache-tomcat-9.0.68/webapps/"
+}
+}
+*/
+}
